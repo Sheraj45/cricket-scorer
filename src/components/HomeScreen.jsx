@@ -29,11 +29,6 @@ function HomeScreen({ setScreen }) {
           MY MATCHES
         </button>
 
-        <button
-          className="w-full bg-white text-slate py-4 rounded-xl font-body font-semibold text-sm tracking-wide border-2 border-slate/15"
-        >
-          TOURNAMENTS
-        </button>
 
         <button
   onClick={() => setScreen('teams')}
@@ -43,10 +38,11 @@ function HomeScreen({ setScreen }) {
 </button>
 
         <button
-          className="w-full bg-white text-slate py-4 rounded-xl font-body font-semibold text-sm tracking-wide border-2 border-slate/15"
-        >
-          SETTINGS
-        </button>
+  onClick={() => setScreen('settings')}
+  className="w-full bg-white text-slate py-4 rounded-xl font-body font-semibold text-sm tracking-wide border-2 border-slate/15"
+>
+  SETTINGS
+</button>
       </div>
     </div>
   )

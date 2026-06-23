@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import SettingsScreen from './components/SettingsScreen'
 import SplashScreen from './components/SplashScreen'
 import HomeScreen from './components/HomeScreen'
 import MatchSetup from './components/MatchSetup'
@@ -69,6 +70,13 @@ function App() {
       {screen === 'teams' && (
         <TeamsScreen setScreen={setScreen} teams={teams} setTeams={setTeams} />
       )}
+      {screen === 'settings' && (
+  <SettingsScreen
+    setScreen={setScreen}
+    setMatchHistory={setMatchHistory}
+    setTeams={setTeams}
+  />
+)}
     </div>
   )
 }

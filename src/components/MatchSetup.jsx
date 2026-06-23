@@ -22,16 +22,6 @@ function MatchSetup({ setScreen, matchData, setMatchData }) {
           />
         </div>
 
-        <div>
-          <label className="text-slate/60 text-xs font-mono uppercase tracking-wide">Tournament (Optional)</label>
-          <input
-            name="tournament"
-            value={matchData.tournament || ''}
-            onChange={handleChange}
-            placeholder="Enter tournament name"
-            className="w-full bg-white border-2 border-slate/15 rounded-lg px-4 py-3 mt-1 text-sm focus:outline-none focus:border-brass"
-          />
-        </div>
 
         <div>
           <label className="text-slate/60 text-xs font-mono uppercase tracking-wide">Venue</label>
