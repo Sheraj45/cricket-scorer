@@ -1,3 +1,14 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+
+@theme {
+  --color-pitch: #0F1B12;
+  --color-chalk: #F7F3E8;
+  --color-brass: #C8A24A;
+  --color-ball: #8B2E2E;
+  --color-outfield: #3F6B4F;
+  --color-slate: #2A2A28;
+
+  --font-display: "Archivo Black", sans-serif;
+  --font-body: "Inter", sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
+}
