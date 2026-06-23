@@ -35,6 +35,9 @@ function LiveScore({ setScreen, matchData, setMatchData }) {
     return obj
   })
   const [history, setHistory] = useState([])
+const [needNewBowler, setNeedNewBowler] = useState(false)
+const [lastOverBowler, setLastOverBowler] = useState(null)
+const maxOversPerBowler = Math.ceil(parseInt(matchData.overs) / 5)
 
   const overs = Math.floor(balls / 6)
   const ballsInOver = balls % 6
@@ -74,13 +77,17 @@ function LiveScore({ setScreen, matchData, setMatchData }) {
     }))
 
     const newThisOver = [...thisOver, delivery]
-    if (newBalls % 6 === 0) {
-      setThisOver([])
-      swapStrike()
-    } else {
-      setThisOver(newThisOver)
-      if (run === 1 || run === 3) swapStrike()
-    }
+if (newBalls % 6 === 0) {
+  setThisOver([])
+  swapStrike()
+  if (newBalls < totalBalls) {
+    setLastOverBowler(bowler)
+    setNeedNewBowler(true)
+  }
+} else {
+  setThisOver(newThisOver)
+  if (run === 1 || run === 3) swapStrike()
+}
 
     setBalls(newBalls)
     setRuns(newRuns)
@@ -102,27 +109,45 @@ function LiveScore({ setScreen, matchData, setMatchData }) {
   }
 
   const addWicket = () => {
-    setHistory([...history, { runs, wickets, balls, thisOver, batters, bowlers, striker, nonStriker }])
-    const newWickets = wickets + 1
-    const newBalls = balls + 1
+  setHistory([...history, { runs, wickets, balls, thisOver, batters, bowlers, striker, nonStriker }])
+  const newWickets = wickets + 1
+  const newBalls = balls + 1
 
-    setBatters(prev => ({
-      ...prev,
-      [striker]: { ...prev[striker], balls: prev[striker].balls + 1, out: true }
-    }))
-    setBowlers(prev => ({
-      ...prev,
-      [bowler]: { ...prev[bowler], balls: prev[bowler].balls + 1, wickets: prev[bowler].wickets + 1 }
-    }))
+  setBatters(prev => ({
+    ...prev,
+    [striker]: { ...prev[striker], balls: prev[striker].balls + 1, out: true }
+  }))
+  setBowlers(prev => ({
+    ...prev,
+    [bowler]: { ...prev[bowler], balls: prev[bowler].balls + 1, wickets: prev[bowler].wickets + 1 }
+  }))
 
-    setThisOver([...thisOver, { type: 'wicket', runs: 0 }])
-    setWickets(newWickets)
-    setBalls(newBalls)
+  const newThisOverArr = [...thisOver, { type: 'wicket', runs: 0 }]
+setWickets(newWickets)
+setBalls(newBalls)
 
-    if (newWickets >= battingPlayers.length - 1 || newBalls >= totalBalls) {
-      setTimeout(() => endInnings(runs, newWickets, newBalls), 300)
-    }
+if (newBalls % 6 === 0) {
+  setThisOver([])
+  if (newBalls < totalBalls && newWickets < battingPlayers.length - 1) {
+    setLastOverBowler(bowler)
+    setNeedNewBowler(true)
   }
+} else {
+  setThisOver(newThisOverArr)
+}
+
+  // Auto-select next available batter for the new striker
+  const nextBatter = battingPlayers.find(
+    p => p !== striker && p !== nonStriker && !batters[p]?.out
+  )
+  if (nextBatter && newWickets < battingPlayers.length - 1) {
+    setStriker(nextBatter)
+  }
+
+  if (newWickets >= battingPlayers.length - 1 || newBalls >= totalBalls) {
+    setTimeout(() => endInnings(runs, newWickets, newBalls), 300)
+  }
+}
 
   const undoLast = () => {
     if (history.length === 0) return
@@ -198,6 +223,35 @@ function LiveScore({ setScreen, matchData, setMatchData }) {
         </div>
       </div>
 
+      {needNewBowler && (
+        <div className="bg-yellow-50 border-y border-yellow-300 px-4 py-3">
+          <p className="text-yellow-800 font-bold text-sm mb-2">
+            🏏 Over complete! Select next bowler
+          </p>
+          <select
+            className="w-full border border-yellow-400 rounded-lg px-2 py-2 text-sm mb-2"
+            onChange={e => {
+              setBowler(e.target.value)
+              setNeedNewBowler(false)
+            }}
+            defaultValue=""
+          >
+            <option value="" disabled>Choose bowler</option>
+            {bowlingPlayers
+              .filter(p => p !== lastOverBowler)
+              .filter(p => Math.floor((bowlers[p]?.balls ?? 0) / 6) < maxOversPerBowler)
+              .map(p => {
+                const oversBowled = Math.floor((bowlers[p]?.balls ?? 0) / 6)
+                return (
+                  <option key={p} value={p}>
+                    {p} ({oversBowled}/{maxOversPerBowler} overs)
+                  </option>
+                )
+              })}
+          </select>
+        </div>
+      )}
+
       <div className="px-4 py-3">
         <div className="text-xs text-gray-500 font-medium mb-2">THIS OVER</div>
         <div className="flex gap-2 flex-wrap">
@@ -269,49 +323,63 @@ function LiveScore({ setScreen, matchData, setMatchData }) {
       </div>
 
       <div className="px-4 py-2 flex gap-2">
-        <div className="flex-1">
-          <label className="text-xs text-gray-500">Striker</label>
-          <select
-            value={striker}
-            onChange={e => setStriker(e.target.value)}
-            className="w-full border border-gray-300 rounded-lg px-2 py-2 text-sm mt-1"
-          >
-            {battingPlayers.map(p => <option key={p}>{p}</option>)}
-          </select>
-        </div>
-        <div className="flex-1">
-          <label className="text-xs text-gray-500">Non-striker</label>
-          <select
-            value={nonStriker}
-            onChange={e => setNonStriker(e.target.value)}
-            className="w-full border border-gray-300 rounded-lg px-2 py-2 text-sm mt-1"
-          >
-            {battingPlayers.map(p => <option key={p}>{p}</option>)}
-          </select>
-        </div>
-      </div>
+  <div className="flex-1">
+    <label className="text-xs text-gray-500">Striker</label>
+    <select
+      value={striker}
+      onChange={e => setStriker(e.target.value)}
+      className="w-full border border-gray-300 rounded-lg px-2 py-2 text-sm mt-1"
+    >
+      {battingPlayers
+        .filter(p => !batters[p]?.out || p === striker)
+        .map(p => <option key={p}>{p}</option>)}
+    </select>
+  </div>
+  <div className="flex-1">
+    <label className="text-xs text-gray-500">Non-striker</label>
+    <select
+      value={nonStriker}
+      onChange={e => setNonStriker(e.target.value)}
+      className="w-full border border-gray-300 rounded-lg px-2 py-2 text-sm mt-1"
+    >
+      {battingPlayers
+        .filter(p => !batters[p]?.out || p === nonStriker)
+        .map(p => <option key={p}>{p}</option>)}
+    </select>
+  </div>
+</div>
 
       <div className="px-4 py-2">
-        <label className="text-xs text-gray-500">Bowler</label>
-        <select
-          value={bowler}
-          onChange={e => setBowler(e.target.value)}
-          className="w-full border border-gray-300 rounded-lg px-2 py-2 text-sm mt-1"
-        >
-          {bowlingPlayers.map(p => <option key={p}>{p}</option>)}
-        </select>
-      </div>
+  <label className="text-xs text-gray-500">
+    Bowler <span className="text-gray-400">(max {maxOversPerBowler} ov/bowler)</span>
+  </label>
+  <select
+    value={bowler}
+    onChange={e => setBowler(e.target.value)}
+    className="w-full border border-gray-300 rounded-lg px-2 py-2 text-sm mt-1"
+    disabled={needNewBowler}
+  >
+    {bowlingPlayers.map(p => {
+      const oversBowled = Math.floor((bowlers[p]?.balls ?? 0) / 6)
+      return (
+        <option key={p} value={p}>
+          {p} ({oversBowled}/{maxOversPerBowler} ov)
+        </option>
+      )
+    })}
+  </select>
+</div>
 
       <div className="px-4 py-3">
-        <div className="text-xs text-gray-500 font-medium mb-2">SCORE ENTRY</div>
-        <div className="grid grid-cols-4 gap-2 mb-2">
-          {[0, 1, 2, 3].map(r => (
-            <button key={r} onClick={() => addDelivery(r)}
-              className="py-4 bg-white border border-gray-300 rounded-xl font-bold text-lg text-gray-700">
-              {r}
-            </button>
-          ))}
-        </div>
+  <div className="text-xs text-gray-500 font-medium mb-2">SCORE ENTRY</div>
+  <div className="grid grid-cols-4 gap-2 mb-2">
+    {[0, 1, 2, 3].map(r => (
+      <button key={r} onClick={() => addDelivery(r)} disabled={needNewBowler}
+        className="py-4 bg-white border border-gray-300 rounded-xl font-bold text-lg text-gray-700 disabled:opacity-40">
+        {r}
+      </button>
+    ))}
+  </div>
         <div className="grid grid-cols-4 gap-2 mb-2">
           <button onClick={() => addDelivery(4)}
             className="py-4 bg-blue-50 border border-blue-300 rounded-xl font-bold text-lg text-blue-700">4</button>

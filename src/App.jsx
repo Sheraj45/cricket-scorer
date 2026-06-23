@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import SplashScreen from './components/SplashScreen'
 import HomeScreen from './components/HomeScreen'
 import MatchSetup from './components/MatchSetup'
@@ -12,7 +12,15 @@ import MyMatches from './components/MyMatches'
 function App() {
   const [screen, setScreen] = useState('splash')
   const [matchData, setMatchData] = useState({ currentInnings: 0 })
-  const [matchHistory, setMatchHistory] = useState([])
+
+  const [matchHistory, setMatchHistory] = useState(() => {
+    const saved = localStorage.getItem('cricket_match_history')
+    return saved ? JSON.parse(saved) : []
+  })
+
+  useEffect(() => {
+    localStorage.setItem('cricket_match_history', JSON.stringify(matchHistory))
+  }, [matchHistory])
 
   return (
     <div className="max-w-sm mx-auto min-h-screen bg-white">
