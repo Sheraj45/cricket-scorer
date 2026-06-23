@@ -38,56 +38,61 @@ function MatchSummary({ setScreen, matchData, setMatchHistory }) {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="bg-blue-600 px-4 py-4">
-        <h2 className="text-white text-lg font-bold">Match Summary</h2>
+    <div className="min-h-screen bg-chalk font-body">
+      <div className="bg-pitch px-5 py-5">
+        <h2 className="text-chalk text-lg font-display tracking-tight">MATCH SUMMARY</h2>
       </div>
 
-      <div className="p-6 flex flex-col gap-4">
-        <div className="bg-green-50 border border-green-200 rounded-2xl p-5 text-center">
-          <p className="text-green-800 font-bold text-xl">{result}</p>
+      <div className="p-5 flex flex-col gap-4">
+        <div className="bg-outfield/10 border-2 border-outfield rounded-2xl p-5 text-center">
+          <p className="text-outfield font-display text-lg">{result}</p>
         </div>
 
-        <div className="bg-white rounded-2xl p-5 shadow-sm">
-          <p className="text-gray-500 text-sm font-medium mb-3">SCORECARD</p>
-          <div className="flex justify-between py-2 border-b border-gray-100">
-            <span className="font-bold text-gray-800">{team1Name}</span>
-            <span className="text-gray-600">
-              {innings1?.runs}/{innings1?.wickets} ({Math.floor((innings1?.balls || 0) / 6)}.{(innings1?.balls || 0) % 6} ov)
+        <div className="bg-white border-2 border-slate/15 rounded-2xl p-5">
+          <p className="text-slate/50 text-[10px] font-mono uppercase tracking-wide mb-3">Scorecard</p>
+          <div className="flex justify-between py-2 border-b border-slate/10">
+            <span className="font-display text-xs text-slate">{team1Name}</span>
+            <span className="text-slate/70 font-mono text-sm">
+              {innings1?.runs}/{innings1?.wickets} ({Math.floor((innings1?.balls || 0) / 6)}.{(innings1?.balls || 0) % 6})
             </span>
           </div>
           <div className="flex justify-between py-2">
-            <span className="font-bold text-gray-800">{team2Name}</span>
-            <span className="text-gray-600">
-              {innings2?.runs}/{innings2?.wickets} ({Math.floor((innings2?.balls || 0) / 6)}.{(innings2?.balls || 0) % 6} ov)
+            <span className="font-display text-xs text-slate">{team2Name}</span>
+            <span className="text-slate/70 font-mono text-sm">
+              {innings2?.runs}/{innings2?.wickets} ({Math.floor((innings2?.balls || 0) / 6)}.{(innings2?.balls || 0) % 6})
             </span>
           </div>
         </div>
 
-        <div className="bg-white rounded-2xl p-5 shadow-sm">
-          <p className="text-gray-500 text-sm font-medium mb-3">TOP PERFORMERS</p>
-          <div className="flex justify-between py-2 border-b border-gray-100">
-            <span className="text-gray-600 text-sm">Top Scorer (Inn 1)</span>
-            <span className="font-medium text-gray-800">{topBatter(innings1?.batters)}</span>
+        <div className="bg-white border-2 border-slate/15 rounded-2xl p-5">
+          <p className="text-slate/50 text-[10px] font-mono uppercase tracking-wide mb-3">Top Performers</p>
+          <div className="flex justify-between py-2 border-b border-slate/10">
+            <span className="text-slate/60 text-xs font-mono uppercase">Top Scorer (Inn 1)</span>
+            <span className="font-semibold text-slate text-sm">{topBatter(innings1?.batters)}</span>
           </div>
-          <div className="flex justify-between py-2 border-b border-gray-100">
-            <span className="text-gray-600 text-sm">Top Scorer (Inn 2)</span>
-            <span className="font-medium text-gray-800">{topBatter(innings2?.batters)}</span>
+          <div className="flex justify-between py-2 border-b border-slate/10">
+            <span className="text-slate/60 text-xs font-mono uppercase">Top Scorer (Inn 2)</span>
+            <span className="font-semibold text-slate text-sm">{topBatter(innings2?.batters)}</span>
           </div>
-          <div className="flex justify-between py-2 border-b border-gray-100">
-            <span className="text-gray-600 text-sm">Top Bowler (Inn 1)</span>
-            <span className="font-medium text-gray-800">{topBowler(innings1?.bowlers)}</span>
+          <div className="flex justify-between py-2 border-b border-slate/10">
+            <span className="text-slate/60 text-xs font-mono uppercase">Top Bowler (Inn 1)</span>
+            <span className="font-semibold text-slate text-sm">{topBowler(innings1?.bowlers)}</span>
           </div>
           <div className="flex justify-between py-2">
-            <span className="text-gray-600 text-sm">Top Bowler (Inn 2)</span>
-            <span className="font-medium text-gray-800">{topBowler(innings2?.bowlers)}</span>
+            <span className="text-slate/60 text-xs font-mono uppercase">Top Bowler (Inn 2)</span>
+            <span className="font-semibold text-slate text-sm">{topBowler(innings2?.bowlers)}</span>
           </div>
         </div>
 
         <div className="flex gap-3">
           <button
             onClick={handleSave}
-            className="flex-1 bg-blue-600 text-white py-4 rounded-xl font-bold"
+            className="flex-1 bg-brass text-pitch py-4 rounded-xl font-display text-sm border-2 border-pitch"
+            style={{ boxShadow: '4px 4px 0 0 #0F1B12' }}
+            onMouseDown={(e) => { e.currentTarget.style.boxShadow = 'none'; e.currentTarget.style.transform = 'translate(4px, 4px)' }}
+            onMouseUp={(e) => { e.currentTarget.style.boxShadow = '4px 4px 0 0 #0F1B12'; e.currentTarget.style.transform = 'translate(0, 0)' }}
+            onTouchStart={(e) => { e.currentTarget.style.boxShadow = 'none'; e.currentTarget.style.transform = 'translate(4px, 4px)' }}
+            onTouchEnd={(e) => { e.currentTarget.style.boxShadow = '4px 4px 0 0 #0F1B12'; e.currentTarget.style.transform = 'translate(0, 0)' }}
           >
             SAVE
           </button>
@@ -96,7 +101,7 @@ function MatchSummary({ setScreen, matchData, setMatchHistory }) {
               const text = `${matchData.matchName}\n${result}\n${team1Name}: ${innings1?.runs}/${innings1?.wickets}\n${team2Name}: ${innings2?.runs}/${innings2?.wickets}`
               navigator.share ? navigator.share({ title: 'Match Result', text }) : alert(text)
             }}
-            className="flex-1 bg-white border-2 border-blue-600 text-blue-600 py-4 rounded-xl font-bold"
+            className="flex-1 bg-white border-2 border-pitch text-pitch py-4 rounded-xl font-display text-sm"
           >
             SHARE
           </button>

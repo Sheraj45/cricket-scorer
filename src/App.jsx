@@ -8,6 +8,7 @@ import LiveScore from './components/LiveScore'
 import InningsBreak from './components/InningsBreak'
 import MatchSummary from './components/MatchSummary'
 import MyMatches from './components/MyMatches'
+import TeamsScreen from './components/TeamsScreen'
 
 function App() {
   const [screen, setScreen] = useState('splash')
@@ -18,9 +19,18 @@ function App() {
     return saved ? JSON.parse(saved) : []
   })
 
+  const [teams, setTeams] = useState(() => {
+    const saved = localStorage.getItem('cricket_teams')
+    return saved ? JSON.parse(saved) : []
+  })
+
   useEffect(() => {
     localStorage.setItem('cricket_match_history', JSON.stringify(matchHistory))
   }, [matchHistory])
+
+  useEffect(() => {
+    localStorage.setItem('cricket_teams', JSON.stringify(teams))
+  }, [teams])
 
   return (
     <div className="max-w-sm mx-auto min-h-screen bg-white">
@@ -30,7 +40,12 @@ function App() {
         <MatchSetup setScreen={setScreen} matchData={matchData} setMatchData={setMatchData} />
       )}
       {screen === 'playerEntry' && (
-        <PlayerEntry setScreen={setScreen} matchData={matchData} setMatchData={setMatchData} />
+        <PlayerEntry
+          setScreen={setScreen}
+          matchData={matchData}
+          setMatchData={setMatchData}
+          teams={teams}
+        />
       )}
       {screen === 'toss' && (
         <TossScreen setScreen={setScreen} matchData={matchData} setMatchData={setMatchData} />
@@ -50,6 +65,9 @@ function App() {
       )}
       {screen === 'myMatches' && (
         <MyMatches setScreen={setScreen} matchHistory={matchHistory} />
+      )}
+      {screen === 'teams' && (
+        <TeamsScreen setScreen={setScreen} teams={teams} setTeams={setTeams} />
       )}
     </div>
   )

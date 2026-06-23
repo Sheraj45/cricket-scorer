@@ -36,10 +36,11 @@ function HomeScreen({ setScreen }) {
         </button>
 
         <button
-          className="w-full bg-white text-slate py-4 rounded-xl font-body font-semibold text-sm tracking-wide border-2 border-slate/15"
-        >
-          TEAMS
-        </button>
+  onClick={() => setScreen('teams')}
+  className="w-full bg-white text-slate py-4 rounded-xl font-body font-semibold text-sm tracking-wide border-2 border-slate/15"
+>
+  TEAMS
+</button>
 
         <button
           className="w-full bg-white text-slate py-4 rounded-xl font-body font-semibold text-sm tracking-wide border-2 border-slate/15"

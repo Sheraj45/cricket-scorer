@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-function PlayerEntry({ setScreen, matchData, setMatchData }) {
+function PlayerEntry({ setScreen, matchData, setMatchData, teams }) {
   const playerCount = parseInt(matchData.players) || 11
   const [team1, setTeam1] = useState(matchData.team1Name || '')
   const [team2, setTeam2] = useState(matchData.team2Name || '')
@@ -11,6 +11,7 @@ function PlayerEntry({ setScreen, matchData, setMatchData }) {
     matchData.team2Players || Array(playerCount).fill('')
   )
   const [activeTeam, setActiveTeam] = useState(1)
+  const [showSavedList, setShowSavedList] = useState(false)
 
   const updatePlayer = (team, index, value) => {
     if (team === 1) {
@@ -22,6 +23,18 @@ function PlayerEntry({ setScreen, matchData, setMatchData }) {
       updated[index] = value
       setTeam2Players(updated)
     }
+  }
+
+  const loadSavedTeam = (savedTeam) => {
+    const filledPlayers = Array(playerCount).fill('').map((_, i) => savedTeam.players[i] || '')
+    if (activeTeam === 1) {
+      setTeam1(savedTeam.name)
+      setTeam1Players(filledPlayers)
+    } else {
+      setTeam2(savedTeam.name)
+      setTeam2Players(filledPlayers)
+    }
+    setShowSavedList(false)
   }
 
   const handleNext = () => {
@@ -52,6 +65,30 @@ function PlayerEntry({ setScreen, matchData, setMatchData }) {
       </div>
 
       <div className="p-5">
+        {teams.length > 0 && (
+          <button
+            onClick={() => setShowSavedList(!showSavedList)}
+            className="w-full bg-brass/10 border-2 border-brass text-pitch py-3 rounded-lg font-mono text-xs uppercase tracking-wide mb-4"
+          >
+            {showSavedList ? 'Hide saved teams ▲' : '📋 Load from saved team ▼'}
+          </button>
+        )}
+
+        {showSavedList && (
+          <div className="flex flex-col gap-2 mb-4">
+            {teams.map(team => (
+              <button
+                key={team.id}
+                onClick={() => loadSavedTeam(team)}
+                className="w-full bg-white border-2 border-slate/15 rounded-lg px-4 py-3 text-left"
+              >
+                <p className="font-display text-xs text-slate">{team.name}</p>
+                <p className="text-[10px] text-slate/40 font-mono">{team.players.length} players</p>
+              </button>
+            ))}
+          </div>
+        )}
+
         <div>
           <label className="text-slate/60 text-xs font-mono uppercase tracking-wide">
             {activeTeam === 1 ? 'Team 1 Name' : 'Team 2 Name'}
